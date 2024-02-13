@@ -11,6 +11,9 @@ import pyjokes
 import pyautogui as pt
 import time
 import random as rd
+import json
+import urllib.request
+import wolframalpha
 #-----------------------------------------------------------------------------
 
 
@@ -119,8 +122,14 @@ def google_search():
     wb.open('https://www.google.com/search?q=' + find)
     
 def cmd():
-     com = commandInput().lower()
-     os.system(com)
+    speak("what are your commands sir")
+    com = commandInput().lower()
+    if 'restart os' in com:
+        os.system('shutdown /r')
+    elif 'shutdown os' in com:
+        os.system('shutdown')
+    elif 'log out' in com:
+        os.system('shutdown -l')
 
 def usage():
     cpu = str(psutil.cpu_percent())
@@ -204,6 +213,42 @@ def remember():
     memo = open("notes.txt", 'r')
     speak("this is what i remember " + memo.readline())
 
+def get_news():
+    api_url = urllib.request('https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=API_KEY')
+    news = json.load(api_url)
+    for piece in news['article']:
+        print(piece['title']+"\n")
+        speak(piece['title'])
+
+def get_location():
+    speak("which place")
+    find = commandInput().lower()
+    speak("locating")
+    wb.open('https://www.google.com/maps/place/' + find)
+    
+def calculate():
+    cli = wolframalpha.Client(app_id='5EUX97-ER7HVLT9R6')
+    speak("what should i calculate")
+    req = commandInput().lower()
+    res = cli.query(req)
+    ans = next(res).text
+    speak("the answer is")
+    speak(ans)    
+    
+def explain(req):
+    cli = wolframalpha.Client(app_id='5EUX97-ER7HVLT9R6')
+    speak("explaining")
+    res = cli.query(req)
+    print(next(res).text)
+    speak(next(res).text)
+
+def stop_listening():
+    speak("for how long should i stop")
+    ans = commandInput().lower()
+    print(ans)
+    speak(f"stopping for {ans} seconds")
+    time.sleep(int(ans))
+
     
 if __name__ == "__main__" :
     
@@ -251,7 +296,7 @@ if __name__ == "__main__" :
                 speak("could not search")
                 print("could not search")
                 
-        elif 'terminal' in req:
+        elif 'terminal' in req or 'commands' in req:
             cmd()
         
         elif 'cpu' in req or 'battery' in req :
@@ -290,10 +335,37 @@ if __name__ == "__main__" :
         elif 'save it' in req:
             save_it()
         
-        elif 'remembers' in req:#mainly used to remember the last conversation
-            remember()
-            
+        #elif 'remembers' in req:#mainly used to remember the last conversation
+            #remember()
+        
+        elif 'news' in req:
+            try:
+                get_news()
+            except Exception as e:
+                print(e)        
+                
+        elif 'location' in req:
+            get_location()
+        
+        #elif 'calculate' in req:
+         #   try:
+          #      calculate()
+           # except Exception as e:
+            #    print(e)
+             #   print("could not calculate")
+        elif 'explain' in req or 'what is' in req :
+            try:
+                explain(req)
+            except Exception as e:
+                print(e)
+                speak("could not understand")
+        
+        elif 'stop' in req:
+            stop_listening()    
+
+        
         elif 'exit' in req or 'quit'in req:
             speak("Exiting now")
             exit()
+        
         
