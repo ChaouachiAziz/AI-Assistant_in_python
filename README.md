@@ -1,2 +1,2 @@
-# AI-Assistatn_in_python
+# AI-Assistant_in_python
  
