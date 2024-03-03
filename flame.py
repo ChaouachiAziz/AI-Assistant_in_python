@@ -14,6 +14,7 @@ import random as rd
 import json
 import urllib.request
 import wolframalpha
+import tkinter as tk
 #-----------------------------------------------------------------------------
 
 
@@ -52,19 +53,17 @@ def wiki_search(req):
     
     
     
-def welcome():
+def welcome(username):
     hour = datetime.datetime.now().hour
     if (hour >= 6 and hour < 12):
-        speak("good morning aziz")
+        speak(f"good morning {username}")
     elif (hour >= 12 and hour < 18):
-        speak("good afternoon aziz")
+        speak(f"good afternoon {username}")
     elif (hour >= 18 and hour < 24):
-        speak("good night aziz")
+        speak(f"good night {username}")
     else:
-        speak("good night aziz")
-    #date()
-    #time_now()
-    speak("How may i be of service today sir")
+        speak(f"good night {username}")
+    speak("How may I be of service today, sir")
 
 
 def commandInput():
@@ -240,7 +239,7 @@ def explain(req):
     speak("explaining")
     res = cli.query(req)
     print(next(res).text)
-    speak(next(res).text)
+    speak(next(res).text) 
 
 def stop_listening():
     speak("for how long should i stop")
@@ -250,9 +249,62 @@ def stop_listening():
     time.sleep(int(ans))
 
     
-if __name__ == "__main__" :
-    
-    welcome()
+if __name__ == "__main__":
+    # Ask for the username using tkinter form
+    def on_button_click():
+        global username
+        username = entry_username.get()
+        window.destroy()
+        # Call the welcome function with the provided username
+        welcome(username)
+
+    window = tk.Tk()
+
+    window.geometry("500x400")
+    window.configure(bg="#121212")  # Adjust the background color
+
+    label_username = tk.Label(
+        text="NAME",
+        bg="#121212",  # Background color of the label
+        fg="white",  # Text color of the label
+        font=("Montserrat-Bold", 16)  # Fix the font name
+    )
+    label_username.place(
+        x=200,
+        y=80,
+        width=100,
+        height=40.0
+    )
+
+    # Add an entry widget to take the username
+    entry_username = tk.Entry(
+        bd=0,
+        bg="#FFFFFF",
+        fg="#000000",
+        highlightthickness=0
+    )
+    entry_username.place(
+        x=51.25,
+        y=120.0,
+        width=400.0,
+        height=38.0
+    )
+
+    button_username = tk.Button(
+        text="Submit",
+        command=on_button_click,
+        bg="#FFFFFF",
+        fg="#000000",
+        font=("MontserratRoman Bold", 16)
+    )
+    button_username.place(
+        x=200,
+        y=170,
+        width=100,
+        height=38.0
+    )
+
+    window.mainloop()
     while True:
         req = commandInput().lower()
         if 'time' in req:
@@ -367,5 +419,4 @@ if __name__ == "__main__" :
         elif 'exit' in req or 'quit'in req:
             speak("Exiting now")
             exit()
-        
-        
+    
